@@ -29,7 +29,9 @@ sealed class SelectionCell {
         private val expanded: Boolean = false
     ) : SelectionCell() {
 
-        fun getSpecialisation(): String =specialisationType
+        fun getSpecialisation(): String = specialisationType
+
+        fun getGroupsList(): List<String> = groupsList
 
         fun isExpanded(): Boolean = expanded
 

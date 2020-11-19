@@ -17,9 +17,12 @@ class SelectionActivity : AppCompatActivity() {
         }
     }
 
-
-
-    interface OnBackPressedListener {
-        fun onBackPressedInGroupsFragment()
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            super.onBackPressed()
+            super.onBackPressed()
+        } else {
+            super.onBackPressed()
+        }
     }
 }

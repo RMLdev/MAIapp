@@ -2,6 +2,7 @@ package com.rml.maiassistant.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,18 +52,20 @@ class GroupsSelectionFragment : Fragment() {
             }
         })
         viewModel.getGroupsState().observe(viewLifecycleOwner, Observer {groupsState ->
-            if (groupsState.getFragmentType() == SelectionState.GROUPS_FRAGMENT) {
-                val recyclerList: List<SelectionCell> = groupsState.getCellsList()!!
-                val adapter = recyclerView.adapter as SelectionRecyclerAdapter?
-                if (adapter == null) {
-                    val selectionRecyclerAdapter =
-                        SelectionRecyclerAdapter(recyclerList, layoutInflater, viewModel)
-                    recyclerView.adapter = selectionRecyclerAdapter
-                } else {
-                    recyclerView.adapter = adapter
-                    adapter.update(recyclerList)
-                }
+            if (groupsState == null) {
+                return@Observer
             }
+            val recyclerList: List<SelectionCell> = groupsState.getCellsList()!!
+            val adapter = recyclerView.adapter as SelectionRecyclerAdapter?
+            if (adapter == null) {
+                val selectionRecyclerAdapter =
+                    SelectionRecyclerAdapter(recyclerList, layoutInflater, viewModel)
+                recyclerView.adapter = selectionRecyclerAdapter
+            } else {
+                recyclerView.adapter = adapter
+                adapter.update(recyclerList)
+            }
+
         })
     }
 

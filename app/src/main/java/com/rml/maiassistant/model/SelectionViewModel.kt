@@ -1,5 +1,6 @@
 package com.rml.maiassistant.model
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.rml.maiassistant.repo.selectionrepository.SelectionRepository
@@ -28,12 +29,23 @@ class SelectionViewModel : MAIViewModel(), SelectionRecyclerAdapter.EventInRecyc
     }
 
     override fun onExpandChange(cell: SelectionCell, position: Int, isExpanded: Boolean) {
-        cell as SelectionCell.DepartmentSelectionCell
-        val oldState = _departmentsStateLiveData.value!!
-        val list = oldState.getCellsList()!!.toMutableList()
-        list[position] = cell.setExpanded(isExpanded)
-        val newState = oldState.setCellsList(list)
-        _departmentsStateLiveData.value = newState
+        when (cell) {
+            is SelectionCell.DepartmentSelectionCell -> {
+                val oldState = _departmentsStateLiveData.value!!
+                val list = oldState.getCellsList()!!.toMutableList()
+                list[position] = cell.setExpanded(isExpanded)
+                val newState = oldState.setCellsList(list)
+                _departmentsStateLiveData.value = newState
+            }
+            is SelectionCell.GroupsSelectionCell -> {
+                val oldState = _groupsStateLiveData.value!!
+                val list = oldState.getCellsList()!!.toMutableList()
+                list[position] = cell.setExpanded(isExpanded)
+                val newState = oldState.setCellsList(list)
+                _groupsStateLiveData.value = newState
+                Log.d("aaaaa", "click handled" )
+            }
+        }
     }
 
     fun getDepartmentsState(): LiveData<SelectionState> {

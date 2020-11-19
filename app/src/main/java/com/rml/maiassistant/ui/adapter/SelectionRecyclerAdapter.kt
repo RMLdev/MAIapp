@@ -98,7 +98,7 @@ class SelectionRecyclerAdapter(
             course.setOnClickListener {
                 listener.onExpandChange(cell, adapterPosition, !cell.isExpanded())
             }
-            val adapter = SelectionGridViewAdapter(departmentsList, departmentsLabelsList, inflater)
+            val adapter = SelectionGridViewAdapter(departmentsList, departmentsLabelsList, inflater, SelectionGridViewAdapter.DEPARTMENTS_GV_TYPE)
             departments.adapter = adapter
             departments.onItemClickListener =
                 AdapterView.OnItemClickListener { _: AdapterView<*>, _: View, departmentId: Int, _: Long ->
@@ -127,8 +127,13 @@ class SelectionRecyclerAdapter(
                 false -> View.GONE
             }
             val groups: WrappingGridView = itemView.findViewById(R.id.grid_view)
+            groups.adapter = SelectionGridViewAdapter(cell.getGroupsList(), listOf(), inflater, SelectionGridViewAdapter.GROUPS_GV_TYPE)
             val specialisation: TextView = itemView.findViewById(R.id.title_text)
             specialisation.text = cell.getSpecialisation()
+            specialisation.setOnClickListener {
+                listener.onExpandChange(cell, adapterPosition, !cell.isExpanded())
+            }
+
         }
     }
 
