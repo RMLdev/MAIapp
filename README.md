@@ -10,14 +10,14 @@ Find your way to an audience!
 1. Group selection
 
 # In work:
-1. Page with schedule, of course;
-2. Readable, supportable clean code.
-2. Adorable interface (if you can do it for free, please, contact me c; );
+1. Page with schedule, of course
+2. Readable, supportable clean code
+2. Adorable interface (if you can do it for free, please, contact me c; )
 
 # In plans: 
-2. University news;
-3. Notes;
-4. Reviews about teachers;
-5. Interactive campus map!;
-6. English localisation;
-7. Many more things, that come to my mind on sleepless nights;
+2. University news
+3. Notes
+4. Reviews about teachers
+5. Interactive campus map!
+6. English localisation
+7. Many more things, that come to my mind on sleepless nights
