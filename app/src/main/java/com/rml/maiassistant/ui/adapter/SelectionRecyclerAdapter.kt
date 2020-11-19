@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.GridView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -28,20 +29,15 @@ class SelectionRecyclerAdapter(
     private val SelectionCell.viewType: ViewType
         get() = when (this) {
             is SelectionCell.DepartmentSelectionCell -> ViewType.DEPARTMENT_SELECTION
-            is SelectionCell.GroupSelectionCell -> ViewType.GROUP_SELECTION
+            is SelectionCell.GroupsSelectionCell -> ViewType.GROUP_SELECTION
             else -> throw IllegalArgumentException("Unknown view type")
         }
 
     private val viewTypeValues = ViewType.values()
 
-    fun update(newCells: List<SelectionCell>, inPosition: Int?) {
+    fun update(newCells: List<SelectionCell>) {
         cells = newCells
-        if (inPosition == null) {
-            notifyDataSetChanged()
-        } else {
-            Log.d("aaaaa", "itemChanged in position $inPosition")
-            notifyItemChanged(inPosition)
-        }
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(
@@ -53,10 +49,11 @@ class SelectionRecyclerAdapter(
             parent,
             listener
         )
-        /*  ViewType.GROUP_SELECTION -> GroupSelectionViewHolder(
-              layoutInflater,
-              parent
-          )*/
+        ViewType.GROUP_SELECTION -> GroupSelectionViewHolder(
+            layoutInflater,
+            parent,
+            listener
+        )
         else -> throw Throwable()
     }
 
@@ -103,10 +100,40 @@ class SelectionRecyclerAdapter(
             }
             val adapter = SelectionGridViewAdapter(departmentsList, departmentsLabelsList, inflater)
             departments.adapter = adapter
+            departments.onItemClickListener =
+                AdapterView.OnItemClickListener { _: AdapterView<*>, _: View, departmentId: Int, _: Long ->
+                    listener.onDepartmentClick(
+                        cell.getCourseNumber(),
+                        cell.getDepartmentList()[departmentId].toInt()
+                    )
+                }
+        }
+    }
+
+    class GroupSelectionViewHolder(
+        private val inflater: LayoutInflater,
+        private val parent: ViewGroup,
+        private val listener: EventInRecyclerListener
+    ) : AbsSelectionViewHolder(
+            inflater.inflate(R.layout.department_selection_recycler_cell, parent, false)
+    ) {
+
+        override fun bind(cell: SelectionCell) {
+            cell as SelectionCell.GroupsSelectionCell
+            val groupsExpandableView: ConstraintLayout =
+                itemView.findViewById(R.id.expandableView)
+            groupsExpandableView.visibility = when (cell.isExpanded()) {
+                true -> View.VISIBLE
+                false -> View.GONE
+            }
+            val groups: WrappingGridView = itemView.findViewById(R.id.grid_view)
+            val specialisation: TextView = itemView.findViewById(R.id.title_text)
+            specialisation.text = cell.getSpecialisation()
         }
     }
 
     interface EventInRecyclerListener {
         fun onExpandChange(cell: SelectionCell, position: Int, isExpanded: Boolean)
+        fun onDepartmentClick(courseId: Int, departmentId: Int)
     }
 }

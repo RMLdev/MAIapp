@@ -17,7 +17,7 @@ interface MAIApi {
     @GET("getcollection/{ApiVersion}?")
     fun getGroups(
         @Path("ApiVersion") ApiVersion: String,
-        @Query("department") departmentId: Long,
+        @Query("department") departmentId: Int,
         @Query("course") courseId: Int,
         @Query("wrapAPIKey") ApiToken: String
     ): Observable<List<SelectionNetworkEntity>>

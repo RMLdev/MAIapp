@@ -22,7 +22,6 @@
             android:textColor="#FFFF"
             android:textSize="24sp"
             android:elevation="10dp"
-            android:text="@string/course_number"
             android:textStyle="bold"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout

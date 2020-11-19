@@ -9,7 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MaiApiUtils {
+class MAIApiUtils {
 
     private fun getClient(): OkHttpClient {
         val builder: OkHttpClient.Builder = OkHttpClient().newBuilder()

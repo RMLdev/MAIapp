@@ -3,22 +3,36 @@ package com.rml.maiassistant.model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.rml.maiassistant.repo.selectionrepository.SelectionRepository
+import com.rml.maiassistant.ui.GroupsSelectionFragment
+import com.rml.maiassistant.ui.SelectionActivity
 import com.rml.maiassistant.ui.adapter.SelectionRecyclerAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.observers.DisposableObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class SelectionViewModel : BaseViewModel(), SelectionRecyclerAdapter.EventInRecyclerListener {
+class SelectionViewModel : MAIViewModel(), SelectionRecyclerAdapter.EventInRecyclerListener, GroupsSelectionFragment.OnBackInGroupsFragmentListener {
 
     private val _departmentsStateLiveData: MutableLiveData<SelectionState> = MutableLiveData()
+    private val _groupsStateLiveData: MutableLiveData<SelectionState> = MutableLiveData()
+    private val _navigationLiveData: MutableLiveData<Int> = MutableLiveData()
     private val _loadingStateLiveData: MutableLiveData<Boolean> = MutableLiveData()
+
+    override fun onDepartmentClick(courseId: Int, departmentId: Int) {
+        loadGroupsStateLiveData(departmentId, courseId)
+    }
+
+    fun getGroupsState(): LiveData<SelectionState> = _groupsStateLiveData
+
+    override fun onBackPressed() {
+        _groupsStateLiveData.value = _groupsStateLiveData.value?.setFragmentType(SelectionState.DEPARTMENTS_FRAGMENT)
+    }
 
     override fun onExpandChange(cell: SelectionCell, position: Int, isExpanded: Boolean) {
         cell as SelectionCell.DepartmentSelectionCell
         val oldState = _departmentsStateLiveData.value!!
         val list = oldState.getCellsList()!!.toMutableList()
         list[position] = cell.setExpanded(isExpanded)
-        val newState = oldState.setCellsList(list).setChangesPosition(position)
+        val newState = oldState.setCellsList(list)
         _departmentsStateLiveData.value = newState
     }
 
@@ -50,8 +64,35 @@ class SelectionViewModel : BaseViewModel(), SelectionRecyclerAdapter.EventInRecy
 
                     override fun onNext(t: List<SelectionCell>?) {
                         if (t!!.isNotEmpty()) {
-                            val state = SelectionState(t, null)
+                            val state = SelectionState(t, SelectionState.DEPARTMENTS_FRAGMENT)
                             _departmentsStateLiveData.value = state
+                        }
+                    }
+
+                    override fun onError(e: Throwable?) {
+                        throw e!!
+                    }
+                }
+            )
+        )
+    }
+
+    private fun loadGroupsStateLiveData(departmentId: Int, courseId: Int) {
+        showLoading()
+        compositeDisposable.add(SelectionRepository()
+            .getGroups(departmentId, courseId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(
+                object : DisposableObserver<List<SelectionCell>>() {
+                    override fun onComplete() {
+                        hideLoading()
+                    }
+
+                    override fun onNext(t: List<SelectionCell>?) {
+                        if (t!!.isNotEmpty()) {
+                            val state = SelectionState(t, SelectionState.GROUPS_FRAGMENT)
+                            _groupsStateLiveData.value = state
                         }
                     }
 

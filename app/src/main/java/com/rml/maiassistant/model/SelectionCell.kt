@@ -1,7 +1,6 @@
 package com.rml.maiassistant.model
 
 import android.graphics.Bitmap
-import java.lang.IllegalArgumentException
 
 sealed class SelectionCell {
 
@@ -24,8 +23,19 @@ sealed class SelectionCell {
             DepartmentSelectionCell(this.courseNumber, this.departmentsList, this.imagesList, isExpanded)
     }
 
-    data class GroupSelectionCell(
+    data class GroupsSelectionCell(
         private val specialisationType: String,
-        private val groupsList: List<String>
-    ) : SelectionCell()
+        private val groupsList: List<String>,
+        private val expanded: Boolean = false
+    ) : SelectionCell() {
+
+        fun getSpecialisation(): String =specialisationType
+
+        fun isExpanded(): Boolean = expanded
+
+        fun setExpanded(isExpanded: Boolean): GroupsSelectionCell =
+            GroupsSelectionCell(this.specialisationType, this.groupsList, isExpanded)
+    }
+
+
 }

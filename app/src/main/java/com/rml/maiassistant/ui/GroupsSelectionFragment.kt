@@ -1,16 +1,12 @@
 package com.rml.maiassistant.ui
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,25 +17,27 @@ import com.rml.maiassistant.model.SelectionState
 import com.rml.maiassistant.model.SelectionViewModel
 import com.rml.maiassistant.ui.adapter.SelectionRecyclerAdapter
 
-class DepartmentSelectionFragment : Fragment() {
-
+class GroupsSelectionFragment : Fragment() {
     private lateinit var viewModel: SelectionViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         viewModel = ViewModelProviders.of(activity!!).get(SelectionViewModel::class.java)
+        activity!!.supportFragmentManager.addOnBackStackChangedListener {
+            viewModel.onBackPressed()
+        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.department_selection_fragment, container, false)
+        return inflater.inflate(R.layout.groups_selection_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView: RecyclerView = view.findViewById(R.id.selection_recycler)
+        val recyclerView: RecyclerView = view.findViewById(R.id.groups_selection_recycler)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         val loadingProgressBar: CardView = view.findViewById(R.id.loading)
         viewModel.getLoadingState().observe(viewLifecycleOwner, Observer<Boolean> { isLoading ->
@@ -52,12 +50,9 @@ class DepartmentSelectionFragment : Fragment() {
                 }
             }
         })
-        viewModel.getDepartmentsState()
-            .observe(viewLifecycleOwner, Observer<SelectionState?> { departmentsState ->
-                if (departmentsState == null) {
-                    return@Observer
-                }
-                val recyclerList: List<SelectionCell> = departmentsState.getCellsList()!!
+        viewModel.getGroupsState().observe(viewLifecycleOwner, Observer {groupsState ->
+            if (groupsState.getFragmentType() == SelectionState.GROUPS_FRAGMENT) {
+                val recyclerList: List<SelectionCell> = groupsState.getCellsList()!!
                 val adapter = recyclerView.adapter as SelectionRecyclerAdapter?
                 if (adapter == null) {
                     val selectionRecyclerAdapter =
@@ -67,20 +62,11 @@ class DepartmentSelectionFragment : Fragment() {
                     recyclerView.adapter = adapter
                     adapter.update(recyclerList)
                 }
-            })
-
-        viewModel.getGroupsState().observe(viewLifecycleOwner, Observer { groupsState ->
-            if (groupsState == null) {
-                return@Observer
-            }
-            if (groupsState.getFragmentType() == SelectionState.GROUPS_FRAGMENT) {
-                activity!!
-                    .supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.gs_fragment_container, GroupsSelectionFragment())
-                    .addToBackStack(null)
-                    .commit()
             }
         })
+    }
+
+    interface OnBackInGroupsFragmentListener {
+        fun onBackPressed()
     }
 }

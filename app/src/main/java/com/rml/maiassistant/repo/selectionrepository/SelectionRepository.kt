@@ -40,4 +40,27 @@ class SelectionRepository {
         }
        else throw Throwable()
     }
+
+    fun getGroups(departmentId: Int, courseId: Int): Observable<List<SelectionCell>> {
+        val isConnected = true
+        if (isConnected) {
+            val observableGroups = remoteRepository
+                .getGroups(departmentId, courseId)
+                .map { networkList ->
+                    val _cellsList: MutableList<SelectionCell> = mutableListOf()
+                    networkList.iterator().forEach { networkEntity->
+                        val specialisationType = networkEntity.name
+                        val groupsList = networkEntity.array
+                        _cellsList.add(
+                            SelectionCell.GroupsSelectionCell(specialisationType, groupsList)
+                        )
+                    }
+                    return@map _cellsList.toList()
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+            return observableGroups
+        }
+        else throw Throwable()
+    }
 }
