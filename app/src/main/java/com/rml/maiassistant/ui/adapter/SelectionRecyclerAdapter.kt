@@ -82,14 +82,17 @@ class SelectionRecyclerAdapter(
 
         override fun bind(cell: SelectionCell) {
             cell as SelectionCell.DepartmentSelectionCell
+            val isEnabled = cell.isEnabled()
+            val departments: WrappingGridView = itemView.findViewById(R.id.grid_view)
+            val course: TextView = itemView.findViewById(R.id.title_text)
+            departments.isEnabled = isEnabled
+            course.isEnabled = isEnabled
             val departmentsExpandableView: ConstraintLayout =
                 itemView.findViewById(R.id.expandableView)
             departmentsExpandableView.visibility = when (cell.isExpanded()) {
                 true -> View.VISIBLE
                 false -> View.GONE
             }
-            val departments: WrappingGridView = itemView.findViewById(R.id.grid_view)
-            val course: TextView = itemView.findViewById(R.id.title_text)
             val courseNumber =
                 parent.context.resources.getString(R.string.course_number) + " " + cell.getCourseNumber()
             val departmentsList = cell.getDepartmentList()
@@ -127,6 +130,9 @@ class SelectionRecyclerAdapter(
                 false -> View.GONE
             }
             val groups: WrappingGridView = itemView.findViewById(R.id.grid_view)
+            groups.onItemClickListener = AdapterView.OnItemClickListener { adapterView: AdapterView<*>, view1: View, i: Int, l: Long ->
+                listener.onGroupClick(cell.getGroupsList()[i])
+            }
             groups.adapter = SelectionGridViewAdapter(cell.getGroupsList(), listOf(), inflater, SelectionGridViewAdapter.GROUPS_GV_TYPE)
             val specialisation: TextView = itemView.findViewById(R.id.title_text)
             specialisation.text = cell.getSpecialisation()
@@ -140,5 +146,6 @@ class SelectionRecyclerAdapter(
     interface EventInRecyclerListener {
         fun onExpandChange(cell: SelectionCell, position: Int, isExpanded: Boolean)
         fun onDepartmentClick(courseId: Int, departmentId: Int)
+        fun onGroupClick(groupName: String)
     }
 }

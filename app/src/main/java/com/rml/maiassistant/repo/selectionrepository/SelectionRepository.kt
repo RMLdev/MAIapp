@@ -7,6 +7,7 @@ import com.rml.maiassistant.model.SelectionNetworkEntity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableTransformer
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -62,5 +63,9 @@ class SelectionRepository {
             return observableGroups
         }
         else throw Throwable()
+    }
+
+    fun setUserGroup(groupName: String): Disposable{
+        return localRepository.setUserGroup(groupName)
     }
 }

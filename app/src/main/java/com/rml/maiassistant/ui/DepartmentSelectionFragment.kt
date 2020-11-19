@@ -46,9 +46,11 @@ class DepartmentSelectionFragment : Fragment() {
             when (isLoading) {
                 true -> {
                     loadingProgressBar.visibility = View.VISIBLE
+                    recyclerView.isEnabled = false
                 }
                 false -> {
                     loadingProgressBar.visibility = View.GONE
+                    recyclerView.isEnabled = true
                 }
             }
         })
